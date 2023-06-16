@@ -7,11 +7,6 @@ from mediapipe.python.solutions import face_mesh
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 
-# import matplotlib
-# import matplotlib.pyplot as plt
-
-# from timecode import Timecode
-
 import tkinter as tk
 from tkinter import filedialog
 
@@ -232,8 +227,28 @@ with open(output_csv_path, 'w', newline='') as csv_file:
 
         # Display the frame drawing FaceMesh and timestamp
         annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), face_landmarker_result)        
-        cv2.imshow("Frame", cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
+        # cv2.imshow("Frame", cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
     
+        # Define the value you want to display
+        value = time_formatted
+
+        # Convert the value to a string
+        text = str(value) + " " +file_name      
+
+        # Specify the font properties
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.7
+        color = (255, 0, 0)  # Green color (BGR format)
+        thickness = 1
+        # Position the text on the image
+        position = (50, 50)  # Coordinates of the top-left corner of the text
+        
+
+        # Draw the text on the overlay image
+        image_w_text = cv2.putText(annotated_image, text, position, font, font_scale, color, thickness)        
+
+        cv2.imshow("Frame", cv2.cvtColor(image_w_text, cv2.COLOR_RGB2BGR))
+        
         # Display the frame and timestamp
         # cv2.imshow("Frame", frame)
         # print("Frame:", frame_index, "Timestamp:", frame_timestamp_ms, "milliseconds")
