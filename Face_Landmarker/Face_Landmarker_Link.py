@@ -105,10 +105,10 @@ else:
 # Path to the output CSV file
 file_name = os.path.basename(file_path)
 # print (file_name)
-file_result, extension = os.path.splitext(file_name)
+file_result, extension = os.path.splitext(file_path)
 # print(file_result)
 output_csv_path = str(file_result) + "_blendshape_data.csv"
-# print (output_csv_path)
+print (output_csv_path)
 
 # Create a VideoCapture object
 cap = cv2.VideoCapture(video_path)
@@ -187,7 +187,15 @@ with open(output_csv_path, 'w', newline='') as csv_file:
             face_blendshapes = face_landmarker_result.face_blendshapes[0]
             # Create a list to hold all blendshape scores
             all_blendshape_scores = []
+            left_iris = face_landmarker_result.face_landmarks [0][468].x
 
+            # !!! for all intents and purposes, and also because of noise, 
+            # it is more practical to just duplicate left and right eye data
+            # wont be able to do cross eyes.
+
+            left_iris_x = face_landmarker_result.face_landmarks [0][468].x
+            left_iris_y = face_landmarker_result.face_landmarks [0][468].y
+            # print ("left iris: " + str(left_iris))
             
             # Iterate through the face blendshapes starting from index 1 to skip the neutral shape
             for face_blendshapes_category in face_blendshapes[1:]:
@@ -203,7 +211,7 @@ with open(output_csv_path, 'w', newline='') as csv_file:
 
                  
             #The order of the indexes in this list needs to be remade
-            new_order = [8, 10, 12, 14, 16, 18, 20, 9, 11, 13, 15, 17, 19, 21, 22, 25, 23, 24, 26, 31, 37, 38, 32, 43, 44, 29, 30, 27, 28, 45, 46, 39, 40, 41, 42, 35, 36, 33, 34, 47, 48, 0, 1, 2, 3, 4, 5, 6, 7, 49, 50]
+            new_order = [8, 10, 12, 14, 16, 18, 20, 9, 11, 13, 15, 17, 19, 21, 22, 25, 23, 24, 26, 31, 37, 38, 32, 43, 44, 29, 30, 27, 28, 45, 46, 39, 40, 41, 42, 35, 36, 33, 34, 47, 48, 50, 1, 2, 3, 4, 5, 6, 7, 49, 50]
             all_blendshape_scores_sorted =[all_blendshape_scores[i] for i in new_order]
             # print("New one: " + str(all_blendshape_scores_sorted))
 
@@ -211,9 +219,10 @@ with open(output_csv_path, 'w', newline='') as csv_file:
             # print("Number of found blendshapes:", num_blendshapes)    
 
             # Create a list of eight zeros
-            additional_columns = [0] * 10
+            additional_columns = [0] * 4
+            eyes = [left_iris_x, left_iris_y , 0]
             
-            blendshape_data = [time_formatted] +  [num_blendshapes] + all_blendshape_scores_sorted + additional_columns
+            blendshape_data = [time_formatted] +  [num_blendshapes] + all_blendshape_scores_sorted + additional_columns + eyes + eyes
 
 
         
