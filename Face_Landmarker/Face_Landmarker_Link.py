@@ -179,7 +179,12 @@ with open(output_csv_path, 'w', newline='') as csv_file:
             face_landmarker_result = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
             # print(face_landmarker_result)
 
-            face_blendshapes = face_landmarker_result.face_blendshapes[0]
+            if len(face_landmarker_result.face_blendshapes) > 0:
+                face_blendshapes = face_landmarker_result.face_blendshapes[0]
+            else:
+                 # Skip the frame and continue to the next iteration
+                continue
+            # face_blendshapes = face_landmarker_result.face_blendshapes[0]
             # Create a list to hold all blendshape scores
             all_blendshape_scores = []
             left_iris = face_landmarker_result.face_landmarks [0][468].x
