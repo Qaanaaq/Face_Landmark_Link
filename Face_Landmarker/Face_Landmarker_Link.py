@@ -2,6 +2,7 @@ import mediapipe as mp
 import numpy as np
 import cv2
 import csv
+import transforms3d
 
 from mediapipe.python.solutions import face_mesh
 from mediapipe import solutions
@@ -12,7 +13,41 @@ from tkinter import filedialog
 
 import os
 
-# madiea pipe face landmarker options
+#first questions
+headbool = True
+
+while True:
+    headtracking = input("Enable head tracking? (Y/N): ")
+
+    if headtracking.lower() == 'y':
+        print("Head tracking set")
+        headbool = True
+        break  # Exit the loop when input is 'Y' or 'y'
+    elif headtracking.lower() == 'n':
+        print("Head tracking disabled. Pitch, Yaw, and Roll will be 0 for all frames.")
+        headbool = False
+        break  # Exit the loop when input is 'N' or 'n'
+    else:
+        print("Invalid input. Please enter 'Y' or 'N'.")
+
+eyebool = True
+
+while True:
+    eyesymmetry = input("Do you want symmetric eye tracking?  (Y/N):")
+
+    if eyesymmetry.lower() == 'y':
+        print("Eye symmetry set. Left eye movement will be applied to both eyes") 
+        eyebool = False 
+        break  # Exit the loop when input is 'N' or 'n'              
+    elif eyesymmetry.lower() == 'n':
+        print("Eye symmetry disabled")
+        eyebool = True  
+        break  # Exit the loop when input is 'N' or 'n'              
+    else:
+        print("Invalid input. Please enter 'Y' or 'N'.")        
+
+
+# media pipe face landmarker options
 model_path = "face_landmarker.task"
 
 BaseOptions = mp.tasks.BaseOptions
@@ -69,6 +104,60 @@ def draw_landmarks_on_image(rgb_image, detection_result):
             .get_default_face_mesh_iris_connections_style())
 
     return annotated_image
+
+######
+from face_geometry import (  # isort:skip
+    PCF,
+    get_metric_landmarks,
+    procrustes_landmark_basis,
+)
+# define head rotation - taken from (Jim West - MEFAMO)
+
+# points of the face model that will be used for SolvePnP later
+points_idx = [1, 33, 263, 61, 291, 199]
+#points_idx = points_idx + [key for (key, val) in procrustes_landmark_basis]
+points_idx = list(set(points_idx))
+points_idx.sort()
+
+# Calculates the 3d rotation and 3d landmarks from the 2d landmarks
+def calculate_rotation(face_landmarks, pcf, image_shape):
+    frame_width = image_shape.width
+    frame_height = image_shape.height
+    focal_length = frame_width
+    center = (frame_width / 2, frame_height / 2)
+    camera_matrix = np.array(
+        [[focal_length, 0, center[0]], [0, focal_length, center[1]], [0, 0, 1]],
+        dtype="double",
+    )
+
+    dist_coeff = np.zeros((4, 1))
+
+    landmarks = np.array(
+        [(lm.x, lm.y, lm.z) for lm in face_landmarks.face_landmarks[0][:468]]
+
+    )
+    # print(landmarks.shape)
+    landmarks = landmarks.T
+
+    metric_landmarks, pose_transform_mat = get_metric_landmarks(
+        landmarks.copy(), pcf
+    )
+
+    model_points = metric_landmarks[0:3, points_idx].T
+    image_points = (
+        landmarks[0:2, points_idx].T
+        * np.array([frame_width, frame_height])[None, :]
+    )
+
+    success, rotation_vector, translation_vector = cv2.solvePnP(
+        model_points,
+        image_points,
+        camera_matrix,
+        dist_coeff,
+        flags=cv2.SOLVEPNP_ITERATIVE,
+    )
+
+    return pose_transform_mat, metric_landmarks, rotation_vector, translation_vector
 
 ####### Use OpenCV’s VideoCapture to load the input video.
 
@@ -172,24 +261,37 @@ with open(output_csv_path, 'w', newline='') as csv_file:
         # Convert the frame received from OpenCV to a MediaPipe’s Image object.
         frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_array)
-           
+
+        
+
         # Perform face landmarking on the provided single image.
         # The face landmarker must be created with the video mode.
         with FaceLandmarker.create_from_options(options) as landmarker:
             face_landmarker_result = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
             # print(face_landmarker_result)
 
-            face_blendshapes = face_landmarker_result.face_blendshapes[0]
+            if len(face_landmarker_result.face_blendshapes) > 0:
+                face_blendshapes = face_landmarker_result.face_blendshapes[0]
+            else:
+                 # Skip the frame and continue to the next iteration
+                continue
+            
             # Create a list to hold all blendshape scores
             all_blendshape_scores = []
             left_iris = face_landmarker_result.face_landmarks [0][468].x
+            right_iris = face_landmarker_result.face_landmarks [0][473].x
 
+
+            
             # !!! for all intents and purposes, and also because of noise, 
             # it is more practical to just duplicate left and right eye data
             # wont be able to do cross eyes.
+            
 
             left_iris_x = face_landmarker_result.face_landmarks [0][468].x
             left_iris_y = face_landmarker_result.face_landmarks [0][468].y
+            right_iris_x = face_landmarker_result.face_landmarks [0][473].x
+            right_iris_y = face_landmarker_result.face_landmarks [0][473].y
             # print ("left iris: " + str(left_iris))
             
             # Iterate through the face blendshapes starting from index 1 to skip the neutral shape
@@ -213,11 +315,54 @@ with open(output_csv_path, 'w', newline='') as csv_file:
             num_blendshapes = len(face_blendshapes[1:])  # Exclude the first blendshape (neutral shape)
             # print("Number of found blendshapes:", num_blendshapes)    
 
-            # Create a list of eight zeros
-            additional_columns = [0] * 4
-            eyes = [left_iris_x, left_iris_y , 0]
+            # Tongue
+            tongue = [0]
+
+            ####head rotation
+            image_width = mp_image.width
+            image_height = mp_image.height
+
+             # pseudo camera internals
+            focal_length = image_width
+            center = (image_width / 2, image_height / 2)
+            camera_matrix = np.array(
+                [[focal_length, 0, center[0]], [0, focal_length, center[1]], [0, 0, 1]],
+                dtype="double",
+                )
+
+            pcf = PCF(
+                near=1,
+                far=10000,
+                frame_height=image_height,
+                frame_width=image_width,
+                fy=camera_matrix[1, 1],
+                )
             
-            blendshape_data = [time_formatted] +  [num_blendshapes] + all_blendshape_scores_sorted + additional_columns + eyes + eyes
+            pose_transform_mat, metric_landmarks, rotation_vector, translation_vector = calculate_rotation (face_landmarker_result, pcf,  mp_image)
+            # print (pose_transform_mat, metric_landmarks, rotation_vector, translation_vector)
+
+            # calculate the head rotation out of the pose matrix
+            eulerAngles = transforms3d.euler.mat2euler(pose_transform_mat)
+            pitch = -eulerAngles[0]
+            yaw = eulerAngles[1]
+            roll = eulerAngles[2]
+
+            #final head rotation
+            if (headbool == True):                    
+                headrotation = [pitch, yaw, roll]
+            else:
+                headrotation = [ 0, 0, 0]
+            
+        
+
+            #eye rotation
+            if (eyebool == True):                    
+                eyes = [left_iris_x, left_iris_y , 0, right_iris_x, right_iris_y , 0,]
+            else:
+                eyes = [left_iris_x, left_iris_y , 0, left_iris_x, left_iris_y , 0,]
+
+            
+            blendshape_data = [time_formatted] +  [num_blendshapes] + all_blendshape_scores_sorted + tongue + headrotation + eyes 
 
 
         
