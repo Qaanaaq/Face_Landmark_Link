@@ -5,4 +5,5 @@ It can be used to generate facial motion capture in 3d software, for example Ble
 
 Tutorial: https://vimeo.com/878474114
 
-<<a href="https://www.buymeacoffee.com/qaanaaq" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+<a href="https://www.buymeacoffee.com/qaanaaq" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 117px !important;" ></a>
