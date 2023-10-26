@@ -4,3 +4,5 @@ Using the Google Mediapipe, Face_Landmarker.py process, I am extracting normaliz
 It can be used to generate facial motion capture in 3d software, for example Blender, especially with the FACE-It plugin.
 
 Tutorial: https://vimeo.com/878474114
+
+https://www.buymeacoffee.com/qaanaaq
