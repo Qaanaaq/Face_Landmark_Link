@@ -1,0 +1,5 @@
+numpy
+timecode
+mediapipe
+transforms3d
+pyinstaller
