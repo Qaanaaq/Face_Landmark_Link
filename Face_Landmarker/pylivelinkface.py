@@ -1,4 +1,4 @@
-MIT License
+"""MIT License
 
 Copyright (c) 2021 Marco Pattke
 
@@ -18,7 +18,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SOFTWARE."""
 
 from __future__ import annotations
 from collections import deque
@@ -30,6 +30,7 @@ import datetime
 import uuid
 import numpy as np
 from timecode import Timecode
+import math
 
 class FaceBlendShape(Enum):
     EyeBlinkLeft = 0
