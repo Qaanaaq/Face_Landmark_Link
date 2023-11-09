@@ -1,3 +1,25 @@
+MIT License
+
+Copyright (c) 2021 Marco Pattke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 from __future__ import annotations
 from collections import deque
 from statistics import mean
@@ -190,11 +212,33 @@ class PyLiveLinkFace:
         None
         """
 
+        """"SPECIAL ONE EURO FILTER IMPLEMENTATION""" "THESES FEW LINES ARE MY ADDITION - QAANAAQ"
+        # x_prev = 0
+        # dx_prev = 0
+        # t_prev = 0
+
+        # t_e = t - t_prev   
+
+        def smoothing_factor(t_e):
+            r = 2 * math.pi * t_e
+            return r / (r + 1)
+
+
+        def exponential_smoothing(a, x, x_prev):
+            return a * x + (1 - a) * x_prev
+
+        # The filtered derivative of the signal.
+        # a_d = smoothing_factor(0)        
+        a_d = 1
+        
+
         if no_filter:
             self._blend_shapes[index.value] = value
         else:
-            self._old_blend_shapes[index.value].append(value)
-            filterd_value = mean(self._old_blend_shapes[index.value])
+            self._old_blend_shapes[index.value].append(value)            
+            #filterd_value = mean(self._old_blend_shapes[index.value])
+            print ("OLD: " + str(value) +" NEW: "  +str(mean(self._old_blend_shapes[index.value])) )
+            filterd_value = exponential_smoothing(a_d, value, mean(self._old_blend_shapes[index.value]))
             self._blend_shapes[index.value] = filterd_value
 
     @staticmethod

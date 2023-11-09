@@ -198,7 +198,16 @@ while cap.isOpened():
     # print ("Frame ms:" + str(frame_timestamp_ms))
 
     # Convert the frame received from OpenCV to a MediaPipe’s Image object.
-    frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)    
+     
+    width = 1080
+    scale_percent = frame.shape[1] / width
+    height = int(frame.shape[0] / scale_percent)    
+    dim = (width, height)
+    print (frame.shape[0], frame.shape[1],scale_percent, dim)   
+
+    frame_resized = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
+    frame_array = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_array)
         
     # Perform face landmarking on the provided single image.
@@ -249,11 +258,11 @@ while cap.isOpened():
                     
                     
                   
-                for i in range(1, 51):
+                for i in range(0, 51):
                     blendshape_name, blendshape_score = rearranged_blendshape_data[i]
                     # print (blendshape_score)
-                    blendshape_score = float(blendshape_score)
-                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, False)                
+                    blendshape_score = float(blendshape_score) 
+                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, True)                
 
              
 
@@ -338,4 +347,3 @@ while cap.isOpened():
 # Release the VideoCapture object and close all windows
 cap.release()
 cv2.destroyAllWindows()
-
