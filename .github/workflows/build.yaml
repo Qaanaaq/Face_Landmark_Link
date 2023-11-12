@@ -3,6 +3,8 @@ name: Build Application
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - v*
   pull_request:
     branches: [ "main" ]
 
@@ -93,3 +95,41 @@ jobs:
         with:
           name: build_artifact_macos
           path: Face_Landmarker_Link_macos.zip
+
+  release:
+    name: Release pushed tag
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-22.04
+    needs: [ build_linux, build_macos, build_windows ]
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_artifact_windows
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_artifact_linux
+      - name: Download MacOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_artifact_macos
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: .
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            **/Face_Landmarker_Link*.zip
