@@ -3,5 +3,4 @@
 build
 dist
 .DS_Store
-
-
+*/.gitignore
