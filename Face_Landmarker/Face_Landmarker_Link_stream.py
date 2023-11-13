@@ -11,7 +11,38 @@ import time
 import random
 import transforms3d
 
-# madiea pipe face landmarker options
+
+#first questions
+smoothing = 0
+
+while True:
+    print()
+    print("0 - no filter, lot of jitter - good for manual processing")
+    print("1 - mild filtering, some loss of detail, some jitter")
+    print("2 - aggressive filtering, loss of detail - good for live applications")
+
+    smoothing = input("How would you like to smooth the data?: ")
+
+    if smoothing == "0":
+        print("No filtering set")
+        smoothing = 0
+        break  
+    elif smoothing == "1":
+        print("Mild filtering set.")
+        smoothing = 1
+        break  
+    elif smoothing == "2":
+        print("Aggressive filtering set.")
+        smoothing = 2
+        break
+    else:
+        print("Invalid input. Please enter '0', '1' or '2'.")
+
+
+
+
+
+# media pipe face landmarker options
 model_path = "face_landmarker.task"
 
 BaseOptions = mp.tasks.BaseOptions
@@ -275,7 +306,7 @@ while cap.isOpened():
                     blendshape_name, blendshape_score = rearranged_blendshape_data[i]
                     # print (blendshape_score)
                     blendshape_score = float(blendshape_score) 
-                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, False)                
+                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, False, smoothing)                
 
              
 
@@ -326,9 +357,9 @@ while cap.isOpened():
                 roll = eulerAngles[2]  
 
                 py_face.set_blendshape(FaceBlendShape(51), 0)
-                py_face.set_blendshape(FaceBlendShape(52), yaw, False)
-                py_face.set_blendshape(FaceBlendShape(53), pitch,False)
-                py_face.set_blendshape(FaceBlendShape(54), roll, False)
+                py_face.set_blendshape(FaceBlendShape(52), yaw, False, 2)
+                py_face.set_blendshape(FaceBlendShape(53), pitch,False,2)
+                py_face.set_blendshape(FaceBlendShape(54), roll, False,2)
                 # print (py_face.encode())
                 s.sendall(py_face.encode())
                 

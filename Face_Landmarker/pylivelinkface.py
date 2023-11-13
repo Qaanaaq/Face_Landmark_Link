@@ -190,7 +190,7 @@ class PyLiveLinkFace:
         return self._blend_shapes[index.value]
 
     def set_blendshape(self, index: FaceBlendShape, value: float, 
-                        no_filter: bool = True) -> None:
+                        no_filter: bool = True, smoothing = 0) -> None:
         """ Sets the value of the blendshape. 
         
         The function will use mean to filter between the old and the new 
@@ -213,7 +213,7 @@ class PyLiveLinkFace:
         None
         """
 
-        """"SPECIAL ONE EURO FILTER IMPLEMENTATION""" "THESES FEW LINES ARE MY ADDITION - QAANAAQ"
+        """"ONE EURO FILTER IMPLEMENTATION""" "THESES FEW LINES ARE MY ADDITION - QAANAAQ"
         # x_prev = 0
         # dx_prev = 0
         # t_prev = 0
@@ -233,14 +233,35 @@ class PyLiveLinkFace:
         a_d = 0.01        
         
 
-        if no_filter:
-            self._blend_shapes[index.value] = value
+        
+        if smoothing == 1: 
+            
+
+            # Using a simple average for smoothing
+            filtered_value = (value + value + mean(self._old_blend_shapes[index.value])) / 3
+
+            # Update old blend shapes with the current value
+            self._old_blend_shapes[index.value].append(value)
+
+            # Update the blend shape with the filtered value
+            self._blend_shapes[index.value] = filtered_value
+
+        elif smoothing == 2:
+
+            # Alternatively, you can use exponential smoothing as well
+            filtered_value = exponential_smoothing(a_d, value, mean(self._old_blend_shapes[index.value]))
+
+            # Update old blend shapes with the current value
+            self._old_blend_shapes[index.value].append(value)
+
+            # Update the blend shape with the filtered value
+            self._blend_shapes[index.value] = filtered_value
+                            
+            
         else:
-            self._old_blend_shapes[index.value].append(value)  
-            # print ("OLD: " + str(value) +" NEW: "  +str(mean(self._old_blend_shapes[index.value])) )
-            filterd_value = exponential_smoothing(a_d, value, mean(self._old_blend_shapes[index.value]))    
-            # filterd_value = mean(self._old_blend_shapes[index.value])          
-            self._blend_shapes[index.value] = filterd_value
+            self._blend_shapes[index.value] = value
+                
+                
 
     @staticmethod
     def decode(bytes_data: bytes) -> Tuple[bool, PyLiveLinkFace]:
