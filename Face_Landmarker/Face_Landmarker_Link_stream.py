@@ -212,7 +212,7 @@ while cap.isOpened():
     # Convert the frame received from OpenCV to a MediaPipe’s Image object.
     frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)    
      
-    width = 600
+    width = 600 
     scale_percent = frame.shape[1] / width
     height = int(frame.shape[0] / scale_percent)    
     dim = (width, height)
