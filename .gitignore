@@ -4,10 +4,10 @@ build
 dist
 .DS_Store
 
-*/UI_test.py
-*/tracker.ico
-*/__pycache__
-*/tracker2.ico
+Face_Lamdmarker/UI_test.py
+Face_Lamdmarker/tracker.ico
+Face_Lamdmarker/__pycache__
+Face_Lamdmarker/tracker2.ico
 
 
 
