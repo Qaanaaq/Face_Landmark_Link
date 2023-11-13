@@ -4,5 +4,10 @@ build
 dist
 .DS_Store
 
+*/UI_test.py
+*/tracker.ico
+*/__pycache__
+*/tracker2.ico
+
 
 
