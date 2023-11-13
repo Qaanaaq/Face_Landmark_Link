@@ -7,8 +7,6 @@ from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 
 import socket
-import time
-import random
 import transforms3d
 
 
