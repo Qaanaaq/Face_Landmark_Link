@@ -36,14 +36,21 @@ def stream (result: FaceLandmarkerResult, output_image: mp.Image, timestamp_ms: 
 options = FaceLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=model_path),    
     num_faces=1,
-    min_face_detection_confidence=0.5,
-    min_tracking_confidence=0.5,
+    min_face_detection_confidence=0.3,
+    min_tracking_confidence=0.3,
     output_face_blendshapes=True,
     running_mode=VisionRunningMode.LIVE_STREAM,
     result_callback=stream)
 
 
 ### DEFINE DRAW LANDMARKS
+from mediapipe.python.solutions.drawing_utils import DrawingSpec
+# custom_style = mp.solutions.drawing_styles.get_default_pose_landmarks_style()
+white_style = DrawingSpec(color=(254, 254, 254), thickness=None, circle_radius = 1) 
+yellow_style = DrawingSpec(color=(255, 255, 0), thickness=None, circle_radius = 1) 
+none_style = DrawingSpec(color=(0, 0, 0), thickness=None, circle_radius = 0) 
+
+
 def draw_landmarks_on_image(rgb_image, detection_result):
     # print (detection_result)
     face_landmarks_list = detection_result.face_landmarks
@@ -65,21 +72,26 @@ def draw_landmarks_on_image(rgb_image, detection_result):
             connections=mp.solutions.face_mesh.FACEMESH_TESSELATION,
             landmark_drawing_spec=None,
             connection_drawing_spec=mp.solutions.drawing_styles
-            .get_default_face_mesh_tesselation_style())
+            .get_default_face_mesh_tesselation_style()
+            
+        )
         solutions.drawing_utils.draw_landmarks(
             image=annotated_image,
             landmark_list=face_landmarks_proto,
             connections=mp.solutions.face_mesh.FACEMESH_CONTOURS,
             landmark_drawing_spec=None,
-            connection_drawing_spec=mp.solutions.drawing_styles
-            .get_default_face_mesh_contours_style())
+            # connection_drawing_spec=mp.solutions.drawing_styles
+            # .get_default_face_mesh_contours_style())
+            connection_drawing_spec = white_style)
+        
         solutions.drawing_utils.draw_landmarks(
             image=annotated_image,
             landmark_list=face_landmarks_proto,
             connections=mp.solutions.face_mesh.FACEMESH_IRISES,
             landmark_drawing_spec=None,
-            connection_drawing_spec=mp.solutions.drawing_styles
-            .get_default_face_mesh_iris_connections_style())
+            # connection_drawing_spec=mp.solutions.drawing_styles
+            # .get_default_face_mesh_iris_connections_style())
+            connection_drawing_spec=yellow_style)
 
     return annotated_image
 
@@ -200,11 +212,11 @@ while cap.isOpened():
     # Convert the frame received from OpenCV to a MediaPipe’s Image object.
     frame_array = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)    
      
-    width = 1080
+    width = 600
     scale_percent = frame.shape[1] / width
     height = int(frame.shape[0] / scale_percent)    
     dim = (width, height)
-    print (frame.shape[0], frame.shape[1],scale_percent, dim)   
+    # print (frame.shape[0], frame.shape[1],scale_percent, dim)   
 
     frame_resized = cv2.resize(frame, dim, interpolation = cv2.INTER_AREA)
     frame_array = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
@@ -232,8 +244,9 @@ while cap.isOpened():
                     face_blendshapes_category = face_blendshapes[i]
                     blendshape_name = face_blendshapes_category.category_name
                     blendshape_score = face_blendshapes_category.score
-                    formatted_score = "{:.3f}".format(blendshape_score)                                                   
-                    innerindex= i 
+                    
+                    
+                    formatted_score = "{:.3f}".format(blendshape_score)
 
                     blendshape_data.append([blendshape_name, formatted_score])
 
@@ -262,7 +275,7 @@ while cap.isOpened():
                     blendshape_name, blendshape_score = rearranged_blendshape_data[i]
                     # print (blendshape_score)
                     blendshape_score = float(blendshape_score) 
-                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, True)                
+                    py_face.set_blendshape(FaceBlendShape(i), blendshape_score, False)                
 
              
 
@@ -332,9 +345,25 @@ while cap.isOpened():
     
 
     # Display the frame drawing FaceMesh and timestamp
-    annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), stream_result)        
-    cv2.imshow("Frame", cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
+    annotated_image = draw_landmarks_on_image(mp_image.numpy_view(), stream_result)  
 
+    # Convert the value to a string
+    text = "Streaming... Hit Q to Exit"    
+
+    # Specify the font properties
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.3
+    color = (255, 0, 0)  # Red color (BGR format)
+    thickness = 1
+    # Position the text on the image
+    position = (10, 10)  # Coordinates of the top-left corner of the text
+    
+
+    # Draw the text on the overlay image
+    image_w_text = cv2.putText(annotated_image, text, position, font, font_scale, color, thickness)        
+
+    cv2.imshow("Frame", cv2.cvtColor(image_w_text, cv2.COLOR_RGB2BGR))      
+    
     # cv2.imshow("Frame", cv2.cvtColor(mp_image.numpy_view() , cv2.COLOR_RGB2BGR))
 
       

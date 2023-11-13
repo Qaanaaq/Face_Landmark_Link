@@ -10,7 +10,7 @@ Tutorial: https://vimeo.com/878474114
 
 
 
-i am a vsual artist, and coding is only an ends to achieve results i need, 
+I am a visual artist, and coding is only an ends to achieve results i need, 
 lot of the code was aided by ChatGPT, some of the code is directly used from https://github.com/JimWest and his MeFaMo, and PyLiveLinkFace
 
 <a href="https://www.buymeacoffee.com/qaanaaq" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 30px !important;width: 117px !important;" ></a>

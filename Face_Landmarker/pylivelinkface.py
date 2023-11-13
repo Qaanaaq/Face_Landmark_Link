@@ -230,16 +230,16 @@ class PyLiveLinkFace:
 
         # The filtered derivative of the signal.
         # a_d = smoothing_factor(0)        
-        a_d = 1
+        a_d = 0.01        
         
 
         if no_filter:
             self._blend_shapes[index.value] = value
         else:
-            self._old_blend_shapes[index.value].append(value)            
-            #filterd_value = mean(self._old_blend_shapes[index.value])
-            print ("OLD: " + str(value) +" NEW: "  +str(mean(self._old_blend_shapes[index.value])) )
-            filterd_value = exponential_smoothing(a_d, value, mean(self._old_blend_shapes[index.value]))
+            self._old_blend_shapes[index.value].append(value)  
+            # print ("OLD: " + str(value) +" NEW: "  +str(mean(self._old_blend_shapes[index.value])) )
+            filterd_value = exponential_smoothing(a_d, value, mean(self._old_blend_shapes[index.value]))    
+            # filterd_value = mean(self._old_blend_shapes[index.value])          
             self._blend_shapes[index.value] = filterd_value
 
     @staticmethod
