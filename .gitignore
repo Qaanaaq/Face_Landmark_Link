@@ -1,0 +1,14 @@
+*/build
+*/dist
+build
+dist
+.DS_Store
+*/UI_test.py
+*/Face_Landmarker_Link_stream.spec
+*/Face_Landmarker_Link.spec
+Face_Landmarker/Face_Landmarker_Link_stream.spec
+Face_Landmarker/tracker.ico
+Face_Landmarker/__pycache__/face_geometry.cpython-311.pyc
+Face_Landmarker/__pycache__/pylivelinkface.cpython-311.pyc
+Face_Landmarker/tracker2.ico
+
