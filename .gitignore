@@ -3,4 +3,5 @@
 build
 dist
 .DS_Store
-*/.gitignore
+
+Face_Landmarker/.gitignore
