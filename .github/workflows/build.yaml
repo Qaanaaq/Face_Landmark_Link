@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.10"
     - name: Install dependencies
@@ -35,7 +35,7 @@ jobs:
         filename: 'Face_Landmarker_Link_linux.zip'
         path: dist/Face_Landmarker_Link
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build_artifact_linux
         path: Face_Landmarker_Link_linux.zip
@@ -45,9 +45,9 @@ jobs:
       runs-on: windows-latest
 
       steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install dependencies
@@ -63,7 +63,7 @@ jobs:
           filename: 'Face_Landmarker_Link_windows.zip'
           path: dist/Face_Landmarker_Link
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build_artifact_windows
           path: Face_Landmarker_Link_windows.zip
@@ -73,9 +73,9 @@ jobs:
       runs-on: macos-latest
 
       steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install dependencies
@@ -91,7 +91,7 @@ jobs:
           filename: 'Face_Landmarker_Link_macos.zip'
           path: dist/Face_Landmarker_Link
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build_artifact_macos
           path: Face_Landmarker_Link_macos.zip
@@ -114,15 +114,15 @@ jobs:
               --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
               --generate-notes
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build_artifact_windows
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build_artifact_linux
       - name: Download MacOS artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build_artifact_macos
       - name: Display structure of downloaded files
