@@ -41,7 +41,7 @@ while True:
 
 
 # media pipe face landmarker options
-model_path = "face_landmarker.task"
+model_path = "C:\\Users\\abdel\\Desktop\\git&github\\Face_Landmark_Link\\Face_Landmarker\\face_landmarker.task"
 
 BaseOptions = mp.tasks.BaseOptions
 FaceLandmarker = mp.tasks.vision.FaceLandmarker
