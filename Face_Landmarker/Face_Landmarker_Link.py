@@ -46,9 +46,22 @@ while True:
     else:
         print("Invalid input. Please enter 'Y' or 'N'.")        
 
+from pathlib import Path
 
-# media pipe face landmarker options
-model_path = "face_landmarker.task"
+# Get the directory of the current script
+script_dir = Path(__file__).parent.resolve() 
+
+# Define the relative path to the model file
+relative_model_path = Path('face_landmarker.task')
+
+# Construct the full path
+model_path = script_dir / relative_model_path
+
+import os
+
+if not os.path.exists(model_path):
+    print(f"Model file not found at {model_path}")
+    # Handle the error appropriately
 
 BaseOptions = mp.tasks.BaseOptions
 FaceLandmarker = mp.tasks.vision.FaceLandmarker
@@ -58,7 +71,7 @@ VisionRunningMode = mp.tasks.vision.RunningMode
 
 # Create a face landmarker instance with the video mode:
 options = FaceLandmarkerOptions(
-    base_options=BaseOptions(model_asset_path=model_path),
+    base_options=BaseOptions(model_asset_path=str(model_path)),
     running_mode=VisionRunningMode.VIDEO,
     num_faces=1,
     min_face_detection_confidence=0.5,
@@ -163,12 +176,20 @@ def calculate_rotation(face_landmarks, pcf, image_shape):
 
 
 # here i make an open file dialogue window
+
 # Create a Tkinter root window
 root = tk.Tk()
 root.withdraw()  # Hide the root window
 
+# Ensure the root window is on top
+root.attributes('-topmost', True)
+root.update()  # Update window to apply attributes
+
 # Open the file dialog to select the video file
 file_path = filedialog.askopenfilename(title="Select Video File")
+
+# After the file dialog is closed, remove the topmost attribute
+root.attributes('-topmost', False)
 
 # Check if the user selected a file
 if file_path:
@@ -186,13 +207,24 @@ else:
 # Path to the input video file
 #video_path = "???.mp4"
 
-# Path to the output CSV file
+# Assuming 'file_path' is the path to the input video file
 file_name = os.path.basename(file_path)
-# print (file_name)
-file_result, extension = os.path.splitext(file_path)
-# print(file_result)
-output_csv_path = str(file_result) + "_blendshape_data.csv"
-print (output_csv_path)
+file_result, extension = os.path.splitext(file_name)
+
+# Prompt user to select the output CSV file path
+output_csv_path = filedialog.asksaveasfilename(
+    title="Save CSV As",
+    initialfile=f"{file_result}_blendshape_data.csv",
+    defaultextension=".csv",
+    filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+)
+
+if output_csv_path:
+    print(f"CSV will be saved to: {output_csv_path}")
+    # Your code to save the CSV data goes here
+else:
+    print("CSV save operation canceled.")
+
 
 # Create a VideoCapture object
 cap = cv2.VideoCapture(video_path)
