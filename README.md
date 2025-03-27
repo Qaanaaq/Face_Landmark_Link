@@ -17,4 +17,4 @@ Tutorial: https://vimeo.com/878474114
 I am a visual artist, and coding is only an ends to achieve results i need, 
 lot of the code was aided by ChatGPT, some of the code is directly used from https://github.com/JimWest and his MeFaMo, and PyLiveLinkFace
 
-
+testing mac build
