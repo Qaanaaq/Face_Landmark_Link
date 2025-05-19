@@ -1,14 +1,33 @@
-*/build
-*/dist
-build
-dist
+# PyInstaller build artifacts
+dist/
+build/
+*/dist/
+*/build/
+*.spec
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Mac OS
 .DS_Store
 
+# Executables & archives
+*.exe
+*.zip
 
-
-Face_Landmarker/tracker.ico
-Face_Landmarker/tracker2.ico
+# Local scripts or test files (optional)
 Face_Landmarker/UI_test.py
-Face_Landmarker/__pycache__/face_geometry.cpython-311.pyc
-Face_Landmarker/__pycache__/pylivelinkface.cpython-311.pyc
+
+# Icon files (optional, keep if used)
+# Face_Landmarker/tracker.ico
+# Face_Landmarker/tracker2.ico
+
+# Ignore compiled files by name
+Face_Landmarker/__pycache__/
+Face_Landmarker/__pycache__/*.pyc
+
+# This file itself
 Face_Landmarker/.gitignore
