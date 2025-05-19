@@ -2,10 +2,9 @@
 
 from pathlib import Path
 
-# Define the base path of your script
-base_path = Path(__file__).parent.resolve()
+# Hardcode the correct path relative to the repo root or use "." if already in that directory
+base_path = Path(".").resolve()
 
-# Optional: include face_landmarker.task model file if it's used at runtime
 datas = [
     (str(base_path / 'Face_Landmarker' / 'face_landmarker.task'), '.'),
 ]
@@ -13,7 +12,7 @@ datas = [
 block_cipher = None
 
 a = Analysis(
-    ['Face_Landmarker/Face_Landmarker_Link.py'],  # adjust path if needed
+    ['Face_Landmarker/Face_Landmarker_Link.py'],
     pathex=[str(base_path)],
     binaries=[],
     datas=datas,
@@ -40,7 +39,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,  # set to False if it's a GUI app
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
