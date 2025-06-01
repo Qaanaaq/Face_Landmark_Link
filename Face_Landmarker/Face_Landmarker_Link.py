@@ -308,7 +308,7 @@ with open(output_csv_path, 'w', newline='') as csv_file:
 
                  
             #The order of the indexes in this list needs to be remade
-            new_order = [8, 10, 12, 14, 16, 18, 20, 9, 11, 13, 15, 17, 19, 21, 22, 25, 23, 24, 26, 31, 37, 38, 32, 43, 44, 29, 30, 27, 28, 45, 46, 39, 40, 41, 42, 35, 36, 33, 34, 47, 48, 50, 1, 2, 3, 4, 5, 6, 7, 49, 50]
+            new_order = [8, 10, 12, 14, 16, 18, 20, 9, 11, 13, 15, 17, 19, 21, 22, 25, 23, 24, 26, 31, 37, 38, 32, 43, 44, 29, 30, 27, 28, 45, 46, 39, 40, 41, 42, 35, 36, 33, 34, 47, 48, 0, 1, 2, 3, 4, 5, 6, 7, 49, 50]
             all_blendshape_scores_sorted =[all_blendshape_scores[i] for i in new_order]
             # print("New one: " + str(all_blendshape_scores_sorted))
 
