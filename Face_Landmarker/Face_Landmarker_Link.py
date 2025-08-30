@@ -191,7 +191,7 @@ file_name = os.path.basename(file_path)
 # print (file_name)
 file_result, extension = os.path.splitext(file_path)
 # print(file_result)
-output_csv_path = str(file_result) + "_blendshape_data.csv"
+output_csv_path = str(file_result) + ".csv"
 print (output_csv_path)
 
 # Create a VideoCapture object
@@ -406,4 +406,5 @@ with open(output_csv_path, 'w', newline='') as csv_file:
 # Release the VideoCapture object and close all windows
 cap.release()
 cv2.destroyAllWindows()
+
 
